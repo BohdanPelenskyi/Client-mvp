@@ -8,7 +8,7 @@ import useForm from '~/hooks/use-form'
 import { useLoginMutation } from '~/services/auth-service'
 import { useModalContext } from '~/context/modal-context'
 import { useSnackBarContext } from '~/context/snackbar-context'
-import { email } from '~/utils/validations/login'
+import { email, password } from '~/utils/validations/login'
 import loginImg from '~/assets/img/login-dialog/login.svg'
 import { login, snackbarVariants } from '~/constants'
 
@@ -34,7 +34,7 @@ const LoginDialog = () => {
         }
       },
       initialValues: { email: '', password: '' },
-      validations: { email }
+      validations: { email, password }
     }
   )
 

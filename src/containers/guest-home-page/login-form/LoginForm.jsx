@@ -23,10 +23,12 @@ const LoginForm = ({
     useInputVisibility(errors.password)
 
   const { authLoading } = useSelector((state) => state.appMain)
-
   const { openModal } = useModalContext()
-
   const { t } = useTranslation()
+
+  // ADD: Logic to determine if the submit button should be disabled based on validation errors and empty fields
+  const isSubmitDisabled =
+    !data.email || !data.password || Object.values(errors).some(Boolean)
 
   const openForgotPassword = () => {
     openModal({ component: <ForgotPassword /> })
@@ -70,7 +72,12 @@ const LoginForm = ({
         {t('login.forgotPassword')}
       </Typography>
 
-      <AppButton loading={authLoading} sx={styles.loginButton} type='submit'>
+      <AppButton
+        disabled={isSubmitDisabled} // <--- ДОДАНО: передаємо стан блокування
+        loading={authLoading}
+        sx={styles.loginButton}
+        type='submit'
+      >
         {t('common.labels.login')}
       </AppButton>
     </Box>
