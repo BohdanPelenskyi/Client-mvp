@@ -25,8 +25,6 @@ const side = {
   },
   title: {
     typography: 'h5',
-    lineHeight: 1,
-    letterSpacing: 0,
     marginBottom: '8px'
   },
   description: {
