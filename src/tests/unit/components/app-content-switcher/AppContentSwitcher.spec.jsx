@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import AppContentSwitcher from '~/components/app-content-switcher/AppContentSwitcher'
 
 const mockSwitchOptions = {
@@ -12,14 +12,18 @@ const mockOnChange = vi.fn()
 const defaultProps = {
   active: false,
   onChange: mockOnChange,
-  switchOptions: mockSwitchOptions
+  switchOptions: mockSwitchOptions,
+  typographyVariant: 'body1'
 }
 
-const renderComponent = (props = {}) => {
+const renderComponent = (props = {}) =>
   render(<AppContentSwitcher {...defaultProps} {...props} />)
-}
 
 describe('AppContentSwitcher', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('should render with the correct props', () => {
     renderComponent({ active: true })
 
@@ -47,7 +51,7 @@ describe('AppContentSwitcher', () => {
 
     fireEvent.mouseOver(screen.getByText('Right Option'))
 
-    const rightTooltip = await screen.findByText('Left Tooltip')
+    const rightTooltip = await screen.findByText('Right Tooltip')
 
     expect(rightTooltip).toBeInTheDocument()
   })
