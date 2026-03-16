@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next'
+
 import useInputVisibility from '~/hooks/use-input-visibility'
 import { useSelector } from 'react-redux'
 
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
+
 import { useModalContext } from '~/context/modal-context'
 import ForgotPassword from '~/containers/guest-home-page/forgot-password/ForgotPassword'
 import AppTextField from '~/components/app-text-field/AppTextField'
@@ -19,14 +21,23 @@ const LoginForm = ({
   data,
   errors
 }) => {
+  const { t } = useTranslation()
+  const { authLoading } = useSelector((state) => state.appMain)
+  const { openModal } = useModalContext()
+
   const { inputVisibility: passwordVisibility, showInputText: showPassword } =
     useInputVisibility(errors.password)
 
-  const { authLoading } = useSelector((state) => state.appMain)
+  const isEmailValid = /^([a-z0-9_.-]+)@([\da-z.-]+)\.([a-z.]{2,6})$/i.test(
+    data.email
+  )
 
-  const { openModal } = useModalContext()
-
-  const { t } = useTranslation()
+  const isSubmitDisabled =
+    !isEmailValid ||
+    data.password.length < 8 ||
+    data.password.length > 25 ||
+    Object.values(errors).some(Boolean) ||
+    authLoading
 
   const openForgotPassword = () => {
     openModal({ component: <ForgotPassword /> })
@@ -36,7 +47,7 @@ const LoginForm = ({
     <Box component='form' onSubmit={handleSubmit} sx={styles.form}>
       <AppTextField
         autoFocus
-        data-testid={'email'}
+        data-testid='email'
         errorMsg={t(errors.email)}
         fullWidth
         label={t('common.labels.email')}
@@ -51,6 +62,7 @@ const LoginForm = ({
 
       <AppTextField
         InputProps={passwordVisibility}
+        data-testid='password'
         errorMsg={t(errors.password)}
         fullWidth
         label={t('common.labels.password')}
@@ -70,7 +82,13 @@ const LoginForm = ({
         {t('login.forgotPassword')}
       </Typography>
 
-      <AppButton loading={authLoading} sx={styles.loginButton} type='submit'>
+      <AppButton
+        data-testid='loginButton'
+        disabled={isSubmitDisabled}
+        loading={authLoading}
+        sx={styles.loginButton}
+        type='submit'
+      >
         {t('common.labels.login')}
       </AppButton>
     </Box>
