@@ -24,7 +24,7 @@ describe('SearchInput', () => {
     expect(setSearch).toHaveBeenCalled()
   })
 
-  it('should call empty setSerch when delete icon cliked', () => {
+  it('should call empty setSearch when delete icon clicked', () => {
     const deleteIcon = screen.getByTestId('delete-icon')
 
     fireEvent.click(deleteIcon)
@@ -37,7 +37,7 @@ describe('SearchInput', () => {
     expect(setSearch).toHaveBeenCalledWith(search)
   })
 
-  it('it should have visible class if search is empty', () => {
+  it('it should have hidden class if search is empty', () => {
     const deleteIcon = screen.getByTestId('delete-icon')
     const searchInput = screen.getByDisplayValue(search)
 
@@ -45,7 +45,7 @@ describe('SearchInput', () => {
     expect(deleteIcon).toHaveClass('hidden')
   })
 
-  it('it should have hidden class if search is not empty', () => {
+  it('it should have visible class if search is not empty', () => {
     const deleteIcon = screen.getByTestId('delete-icon')
 
     expect(deleteIcon).toHaveClass('visible')
