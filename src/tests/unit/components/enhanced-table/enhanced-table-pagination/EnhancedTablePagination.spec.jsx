@@ -23,7 +23,7 @@ describe('EnhancedTablePagination', () => {
     const activePage = screen.getByRole('button', { current: true })
     expect(activePage).toHaveTextContent('1')
   })
-  it('it should change page from 1 to 2', () => {
+  it('should change page from 1 to 2', () => {
     render(<EnhancedTablePagination pagination={mockPagination} />)
     const page2Button = screen.getByRole('button', { name: /page 2/i })
     fireEvent.click(page2Button)
