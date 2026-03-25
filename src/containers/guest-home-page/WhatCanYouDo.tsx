@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
+import { Box } from '@mui/material'
 
 import TitleWithDescription from '~/components/title-with-description/TitleWithDescription'
 import InfoCard from '~/components/info-card/InfoCard'
@@ -32,11 +32,11 @@ const cardData = [
 
 const WhatCanYouDo = () => {
   const { t } = useTranslation()
-  const { openModal, closeModal } = useModalContext()
+  const { openModal } = useModalContext()
 
   const openRegisterDialog = (role: UserRoleEnum) => {
     openModal({
-      component: <RegisterDialog closeModal={closeModal} role={role} />,
+      component: <RegisterDialog role={role} />,
       paperProps: {
         sx: {
           '& .MuiDialogTitle-root .MuiIconButton-root': {

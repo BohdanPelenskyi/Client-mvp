@@ -33,7 +33,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
         alignItems: 'flex-start'
       }}
     >
-      <Box sx={{ ...styles.linesBox, width: '100%', ml: 0 }}>
+      <Box sx={{ ...styles.linesBox, width: '100%', ml: 0, mt: '16px' }}>
         <Typography sx={styles.continue} variant='body2'>
           {t(`${type}.continue`)}
         </Typography>
@@ -42,7 +42,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
       <Box
         sx={{
           width: '100%',
-          mt: '16px',
+          mt: '8px',
           '& > div': { width: '100% !important' },
           '& button': { width: '100% !important' }
         }}
@@ -58,7 +58,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
       <Box
         sx={{
           display: 'flex',
-          mt: '16px',
+          mt: '8px',
           width: '100%',
           justifyContent: 'flex-start',
           alignItems: 'center'

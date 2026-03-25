@@ -31,9 +31,7 @@ const RegisterDialog = ({ role }) => {
           {isStudent ? 'Sign up as a student' : 'Sign up as a tutor'}
         </Typography>
         <Box sx={styles.form}>
-          {/* Тільки чиста форма */}
           <SignupForm role={role} />
-          {/* Один системний GoogleLogin під формою */}
           <GoogleLogin
             buttonWidth={styles.form.maxWidth}
             role={role}

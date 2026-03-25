@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import {
@@ -11,7 +12,6 @@ import {
 } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { useState } from 'react'
 
 import AppTextField from '~/components/app-text-field/AppTextField'
 import useForm from '~/hooks/use-form'
@@ -43,6 +43,22 @@ const SignupForm = ({ role }) => {
     }
   )
 
+  const getErrorMessage = (errorKey) => {
+    if (!errorKey) return ''
+    return errorKey.includes('empty') || errorKey.includes('required')
+      ? 'This field is required.'
+      : t(errorKey)
+  }
+
+  const isFormInvalid =
+    !data.firstName.trim() ||
+    !data.lastName.trim() ||
+    !data.email.trim() ||
+    !data.password.trim() ||
+    !data.confirmPassword.trim() ||
+    !data.agreement ||
+    Object.values(errors).some((error) => error)
+
   return (
     <Box
       component='form'
@@ -65,7 +81,7 @@ const SignupForm = ({ role }) => {
         <AppTextField
           error={Boolean(errors.firstName)}
           fullWidth
-          helperText={t(errors.firstName)}
+          helperText={getErrorMessage(errors.firstName)}
           label='First name'
           onBlur={handleBlur('firstName')}
           onChange={handleInputChange('firstName')}
@@ -74,7 +90,7 @@ const SignupForm = ({ role }) => {
         <AppTextField
           error={Boolean(errors.lastName)}
           fullWidth
-          helperText={t(errors.lastName)}
+          helperText={getErrorMessage(errors.lastName)}
           label='Last name'
           onBlur={handleBlur('lastName')}
           onChange={handleInputChange('lastName')}
@@ -85,7 +101,7 @@ const SignupForm = ({ role }) => {
       <AppTextField
         error={Boolean(errors.email)}
         fullWidth
-        helperText={t(errors.email)}
+        helperText={getErrorMessage(errors.email)}
         label='Email'
         onBlur={handleBlur('email')}
         onChange={handleInputChange('email')}
@@ -97,14 +113,20 @@ const SignupForm = ({ role }) => {
           endAdornment: (
             <InputAdornment position='end'>
               <IconButton onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <VisibilityOff /> : <Visibility />}
+                {showPassword ? (
+                  <VisibilityOff
+                    color={errors.password ? 'error' : 'inherit'}
+                  />
+                ) : (
+                  <Visibility color={errors.password ? 'error' : 'inherit'} />
+                )}
               </IconButton>
             </InputAdornment>
           )
         }}
         error={Boolean(errors.password)}
         fullWidth
-        helperText={t(errors.password)}
+        helperText={getErrorMessage(errors.password)}
         label='Password'
         onBlur={handleBlur('password')}
         onChange={handleInputChange('password')}
@@ -119,14 +141,22 @@ const SignupForm = ({ role }) => {
               <IconButton
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                {showConfirmPassword ? (
+                  <VisibilityOff
+                    color={errors.confirmPassword ? 'error' : 'inherit'}
+                  />
+                ) : (
+                  <Visibility
+                    color={errors.confirmPassword ? 'error' : 'inherit'}
+                  />
+                )}
               </IconButton>
             </InputAdornment>
           )
         }}
         error={Boolean(errors.confirmPassword)}
         fullWidth
-        helperText={t(errors.confirmPassword)}
+        helperText={getErrorMessage(errors.confirmPassword)}
         label='Confirm password'
         onBlur={handleBlur('confirmPassword')}
         onChange={handleInputChange('confirmPassword')}
@@ -138,7 +168,8 @@ const SignupForm = ({ role }) => {
         control={
           <Checkbox
             checked={data.agreement}
-            onChange={(e) => handleInputChange('agreement')(e.target.checked)}
+            // Використовуємо такий формат, щоб точно оновити state
+            onChange={(e) => handleInputChange('agreement')(e)}
           />
         }
         label={
@@ -150,9 +181,19 @@ const SignupForm = ({ role }) => {
       />
 
       <Button
+        disabled={isFormInvalid}
         fullWidth
         size='large'
-        sx={{ py: '14px', fontWeight: 600, mt: '8px' }}
+        sx={{
+          py: '14px',
+          fontWeight: 600,
+          mt: '8px',
+          // Примусово вказуємо колір, якщо хочеш перебити тему
+          '&.Mui-disabled': {
+            backgroundColor: 'action.disabledBackground',
+            color: 'action.disabled'
+          }
+        }}
         type='submit'
         variant='contained'
       >
@@ -163,4 +204,5 @@ const SignupForm = ({ role }) => {
 }
 
 SignupForm.propTypes = { role: PropTypes.string.isRequired }
+
 export default SignupForm
