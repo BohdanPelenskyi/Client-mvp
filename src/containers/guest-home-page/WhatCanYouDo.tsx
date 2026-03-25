@@ -1,14 +1,16 @@
 import { useTranslation } from 'react-i18next'
-
 import Box from '@mui/material/Box'
+
 import TitleWithDescription from '~/components/title-with-description/TitleWithDescription'
 import InfoCard from '~/components/info-card/InfoCard'
+import RegisterDialog from '~/containers/guest-home-page/register-dialog/RegisterDialog'
 
+import { useModalContext } from '~/context/modal-context'
 import { guestRoutes } from '~/router/constants/guestRoutes'
+import { UserRoleEnum } from '~/types'
+
 import learnImg from '~/assets/img/guest-home-page/learnImg.png'
 import teachImg from '~/assets/img/guest-home-page/teachImg.png'
-
-import { UserRoleEnum } from '~/types'
 import { styles } from '~/containers/guest-home-page/styles/WhatCanYouDo.styles'
 
 const cardData = [
@@ -30,15 +32,32 @@ const cardData = [
 
 const WhatCanYouDo = () => {
   const { t } = useTranslation()
+  const { openModal, closeModal } = useModalContext()
+
+  const openRegisterDialog = (role: UserRoleEnum) => {
+    openModal({
+      component: <RegisterDialog closeModal={closeModal} role={role} />,
+      paperProps: {
+        sx: {
+          '& .MuiDialogTitle-root .MuiIconButton-root': {
+            display: 'none'
+          },
+          '& > button[aria-label="close"]': {
+            display: 'none'
+          }
+        }
+      }
+    })
+  }
 
   const cards = cardData.map((item) => (
     <InfoCard
-      action={() => {}}
+      action={() => openRegisterDialog(item.actionType)}
       actionLabel={t(item.actionLabel)}
       cardWidth={460}
       description={t(item.description)}
       img={item.img}
-      key={item.title}
+      key={item.actionType}
       title={t(item.title)}
     />
   ))
