@@ -33,10 +33,11 @@ const ModalProvider: FC<ModalProviderProps> = ({ children }) => {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null)
 
   const closeModal = useCallback(() => {
+    timer && clearTimeout(timer)
     setModal(null)
     setPaperProps({})
     setTimer(null)
-  }, [setModal, setPaperProps, setTimer])
+  }, [setModal, setPaperProps, setTimer, timer])
 
   const closeModalAfterDelay = useCallback(
     (delay?: number) => {
@@ -48,12 +49,13 @@ const ModalProvider: FC<ModalProviderProps> = ({ children }) => {
 
   const openModal = useCallback(
     ({ component, paperProps }: Component, delayToClose?: number) => {
+      timer && clearTimeout(timer)
       setModal(component)
 
       paperProps && setPaperProps(paperProps)
       delayToClose && closeModalAfterDelay(delayToClose)
     },
-    [setModal, setPaperProps, closeModalAfterDelay]
+    [setModal, setPaperProps, closeModalAfterDelay, timer]
   )
 
   const contextValue = useMemo(
@@ -66,6 +68,7 @@ const ModalProvider: FC<ModalProviderProps> = ({ children }) => {
       {children}
       {modal && (
         <PopupDialog
+          closeModal={closeModal}
           closeModalAfterDelay={closeModalAfterDelay}
           content={modal}
           paperProps={paperProps}
