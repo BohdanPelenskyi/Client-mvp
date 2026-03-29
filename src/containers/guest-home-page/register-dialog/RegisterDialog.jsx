@@ -10,7 +10,8 @@ import { signup } from '~/constants'
 import studentImg from '~/assets/img/register-dialog/student-register.svg'
 import tutorImg from '~/assets/img/register-dialog/tutor-register.svg'
 
-import styles from '~/containers/guest-home-page/register-dialog/RegisterDialog.styles'
+// Використовуємо спільні стилі
+import { authDialogStyles as styles } from '~/containers/guest-home-page/styles/AuthDialog.styles'
 
 const RegisterDialog = ({ role }) => {
   const isStudent = role === UserRoleEnum.Student

@@ -57,7 +57,7 @@ const SignupForm = ({ role }) => {
     !data.password.trim() ||
     !data.confirmPassword.trim() ||
     !data.agreement ||
-    Object.values(errors).some((error) => error)
+    Object.values(errors).some(Boolean)
 
   return (
     <Box

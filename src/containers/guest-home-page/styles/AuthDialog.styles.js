@@ -1,6 +1,6 @@
 import { scrollbar } from '~/styles/app-theme/custom-scrollbar'
 
-const style = {
+export const authDialogStyles = {
   root: {
     maxWidth: { sm: 'sm', md: 'md', lg: 'lg' },
     mt: { xs: '56px', sm: 0 },
@@ -27,7 +27,7 @@ const style = {
     maxHeight: 'inherit',
     boxSizing: 'border-box',
     borderTop: { xs: '1px solid', sm: 'none' },
-    borderColor: { xs: 'primary.100' },
+    borderColor: 'primary.100',
     pt: { xs: '24px', sm: '64px' },
     pl: { xs: '8px', sm: '96px', md: '16px' }
   },
@@ -46,5 +46,3 @@ const style = {
     ...scrollbar
   }
 }
-
-export default style
