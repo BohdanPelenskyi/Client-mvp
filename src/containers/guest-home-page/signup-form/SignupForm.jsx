@@ -59,6 +59,14 @@ const SignupForm = ({ role }) => {
     !data.agreement ||
     Object.values(errors).some(Boolean)
 
+  const helperTextProps = {
+    sx: {
+      whiteSpace: 'normal',
+      wordBreak: 'break-word',
+      lineHeight: '1.2'
+    }
+  }
+
   return (
     <Box
       component='form'
@@ -70,15 +78,17 @@ const SignupForm = ({ role }) => {
         width: '100%'
       }}
     >
+      {/* ТУТ ТІЛЬКИ АДАПТАЦІЯ: XS - column, MD - row */}
       <Box
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
+          flexDirection: { xs: 'column', md: 'row' },
           gap: '16px',
           width: '100%'
         }}
       >
         <AppTextField
+          FormHelperTextProps={helperTextProps}
           error={Boolean(errors.firstName)}
           fullWidth
           helperText={getErrorMessage(errors.firstName)}
@@ -88,6 +98,7 @@ const SignupForm = ({ role }) => {
           value={data.firstName}
         />
         <AppTextField
+          FormHelperTextProps={helperTextProps}
           error={Boolean(errors.lastName)}
           fullWidth
           helperText={getErrorMessage(errors.lastName)}
@@ -99,6 +110,7 @@ const SignupForm = ({ role }) => {
       </Box>
 
       <AppTextField
+        FormHelperTextProps={helperTextProps}
         error={Boolean(errors.email)}
         fullWidth
         helperText={getErrorMessage(errors.email)}
@@ -109,6 +121,7 @@ const SignupForm = ({ role }) => {
       />
 
       <AppTextField
+        FormHelperTextProps={helperTextProps}
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>
@@ -135,6 +148,7 @@ const SignupForm = ({ role }) => {
       />
 
       <AppTextField
+        FormHelperTextProps={helperTextProps}
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>
@@ -168,7 +182,6 @@ const SignupForm = ({ role }) => {
         control={
           <Checkbox
             checked={data.agreement}
-            // Використовуємо такий формат, щоб точно оновити state
             onChange={(e) => handleInputChange('agreement')(e)}
           />
         }
@@ -184,16 +197,7 @@ const SignupForm = ({ role }) => {
         disabled={isFormInvalid}
         fullWidth
         size='large'
-        sx={{
-          py: '14px',
-          fontWeight: 600,
-          mt: '8px',
-          // Примусово вказуємо колір, якщо хочеш перебити тему
-          '&.Mui-disabled': {
-            backgroundColor: 'action.disabledBackground',
-            color: 'action.disabled'
-          }
-        }}
+        sx={{ py: '14px', fontWeight: 600, mt: '8px' }}
         type='submit'
         variant='contained'
       >
@@ -204,5 +208,4 @@ const SignupForm = ({ role }) => {
 }
 
 SignupForm.propTypes = { role: PropTypes.string.isRequired }
-
 export default SignupForm
