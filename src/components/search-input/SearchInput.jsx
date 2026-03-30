@@ -25,7 +25,7 @@ const SearchInput = ({ search, setSearch }) => {
         ),
         endAdornment: (
           <IconButton
-            className={search ? 'visible' : 'hidden'}
+            className={searchInput ? 'visible' : 'hidden'}
             data-testid='delete-icon'
             onClick={() => {
               setSearch('')
