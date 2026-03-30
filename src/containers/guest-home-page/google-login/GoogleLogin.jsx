@@ -21,8 +21,8 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
 
   const haveAccountText =
     role === UserRoleEnum.Student
-      ? 'Already have a student account?'
-      : 'Already have a tutor account?'
+      ? t('signup.haveAccount.student')
+      : t('signup.haveAccount.tutor')
 
   return (
     <Box
@@ -35,7 +35,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
     >
       <Box sx={{ ...styles.linesBox, width: '100%', ml: 0, mt: '16px' }}>
         <Typography sx={styles.continue} variant='body2'>
-          {t(`${type}.continue`)}
+          {t('signup.continue')}
         </Typography>
       </Box>
 
@@ -76,7 +76,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
           }}
           variant='body2'
         >
-          Login!
+          {t('signup.joinUs')}
         </Typography>
       </Box>
     </Box>

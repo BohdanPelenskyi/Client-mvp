@@ -15,6 +15,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 import AppTextField from '~/components/app-text-field/AppTextField'
 import useForm from '~/hooks/use-form'
+import { authService } from '~/services/auth-service'
+import { useModalContext } from '~/context/modal-context'
 import {
   firstName,
   lastName,
@@ -25,6 +27,7 @@ import {
 
 const SignupForm = ({ role }) => {
   const { t } = useTranslation()
+  const { closeModal } = useModalContext()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -38,7 +41,23 @@ const SignupForm = ({ role }) => {
         confirmPassword: '',
         agreement: false
       },
-      onSubmit: async () => console.log('Submit:', role, data),
+      onSubmit: async () => {
+        try {
+          const { firstName, lastName, email, password } = data
+
+          await authService.signup({
+            firstName,
+            lastName,
+            email,
+            password,
+            role
+          })
+
+          closeModal()
+        } catch (e) {
+          console.error('Signup error:', e)
+        }
+      },
       validations: { firstName, lastName, email, password, confirmPassword }
     }
   )
@@ -46,7 +65,7 @@ const SignupForm = ({ role }) => {
   const getErrorMessage = (errorKey) => {
     if (!errorKey) return ''
     return errorKey.includes('empty') || errorKey.includes('required')
-      ? 'This field is required.'
+      ? t('common.errorMessages.emptyField')
       : t(errorKey)
   }
 
@@ -78,7 +97,6 @@ const SignupForm = ({ role }) => {
         width: '100%'
       }}
     >
-      {/* ТУТ ТІЛЬКИ АДАПТАЦІЯ: XS - column, MD - row */}
       <Box
         sx={{
           display: 'flex',
@@ -92,7 +110,7 @@ const SignupForm = ({ role }) => {
           error={Boolean(errors.firstName)}
           fullWidth
           helperText={getErrorMessage(errors.firstName)}
-          label='First name'
+          label={t('common.labels.firstName')}
           onBlur={handleBlur('firstName')}
           onChange={handleInputChange('firstName')}
           value={data.firstName}
@@ -102,7 +120,7 @@ const SignupForm = ({ role }) => {
           error={Boolean(errors.lastName)}
           fullWidth
           helperText={getErrorMessage(errors.lastName)}
-          label='Last name'
+          label={t('common.labels.lastName')}
           onBlur={handleBlur('lastName')}
           onChange={handleInputChange('lastName')}
           value={data.lastName}
@@ -114,7 +132,7 @@ const SignupForm = ({ role }) => {
         error={Boolean(errors.email)}
         fullWidth
         helperText={getErrorMessage(errors.email)}
-        label='Email'
+        label={t('common.labels.email')}
         onBlur={handleBlur('email')}
         onChange={handleInputChange('email')}
         value={data.email}
@@ -140,7 +158,7 @@ const SignupForm = ({ role }) => {
         error={Boolean(errors.password)}
         fullWidth
         helperText={getErrorMessage(errors.password)}
-        label='Password'
+        label={t('common.labels.password')}
         onBlur={handleBlur('password')}
         onChange={handleInputChange('password')}
         type={showPassword ? 'text' : 'password'}
@@ -171,7 +189,7 @@ const SignupForm = ({ role }) => {
         error={Boolean(errors.confirmPassword)}
         fullWidth
         helperText={getErrorMessage(errors.confirmPassword)}
-        label='Confirm password'
+        label={t('common.labels.confirmPassword')}
         onBlur={handleBlur('confirmPassword')}
         onChange={handleInputChange('confirmPassword')}
         type={showConfirmPassword ? 'text' : 'password'}
@@ -187,7 +205,8 @@ const SignupForm = ({ role }) => {
         }
         label={
           <Typography variant='body2'>
-            I agree to the Terms and Privacy Policy
+            {t('signup.iAgree')} {t('common.labels.terms')} {t('signup.and')}{' '}
+            {t('common.labels.privacyPolicy')}
           </Typography>
         }
         sx={{ ml: '-8px' }}
@@ -201,7 +220,7 @@ const SignupForm = ({ role }) => {
         type='submit'
         variant='contained'
       >
-        Sign up
+        {t('common.labels.signup')}
       </Button>
     </Box>
   )

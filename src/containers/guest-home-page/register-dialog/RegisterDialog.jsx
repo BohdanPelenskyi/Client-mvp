@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import PropTypes from 'prop-types'
@@ -10,11 +11,12 @@ import { signup } from '~/constants'
 import studentImg from '~/assets/img/register-dialog/student-register.svg'
 import tutorImg from '~/assets/img/register-dialog/tutor-register.svg'
 
-// Використовуємо спільні стилі
 import { authDialogStyles as styles } from '~/containers/guest-home-page/styles/AuthDialog.styles'
 
 const RegisterDialog = ({ role }) => {
+  const { t } = useTranslation()
   const isStudent = role === UserRoleEnum.Student
+  const titleKey = isStudent ? 'signup.head.student' : 'signup.head.tutor'
 
   return (
     <Box sx={styles.root}>
@@ -29,7 +31,7 @@ const RegisterDialog = ({ role }) => {
 
       <Box sx={styles.formContainer}>
         <Typography sx={styles.title} variant='h2'>
-          {isStudent ? 'Sign up as a student' : 'Sign up as a tutor'}
+          {t(titleKey)}
         </Typography>
         <Box sx={styles.form}>
           <SignupForm role={role} />
@@ -44,8 +46,5 @@ const RegisterDialog = ({ role }) => {
   )
 }
 
-RegisterDialog.propTypes = {
-  role: PropTypes.string.isRequired
-}
-
+RegisterDialog.propTypes = { role: PropTypes.string.isRequired }
 export default RegisterDialog
