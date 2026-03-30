@@ -7,7 +7,10 @@
   "and": "and",
   "googleButton": "Sign up with Google",
   "continue": "or continue",
-  "haveAccount": "Already have a tutor account?",
+  "haveAccount": {
+    "tutor": "Already have a tutor account?",
+    "student": "Already have a student account?"
+  },
   "joinUs": "Login!",
   "confirmEmailTitle": "Your email address needs to be verified",
   "confirmEmailMessage": "We sent a confirmation email to: ",

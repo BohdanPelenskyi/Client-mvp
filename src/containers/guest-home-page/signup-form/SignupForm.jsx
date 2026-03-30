@@ -17,17 +17,20 @@ import AppTextField from '~/components/app-text-field/AppTextField'
 import useForm from '~/hooks/use-form'
 import { authService } from '~/services/auth-service'
 import { useModalContext } from '~/context/modal-context'
+import { useSnackBarContext } from '~/context/snackbar-context'
+import { snackbarVariants } from '~/constants'
 import {
   firstName,
   lastName,
   email,
-  password,
+  signupPassword as password,
   confirmPassword
 } from '~/utils/validations/login'
 
 const SignupForm = ({ role }) => {
   const { t } = useTranslation()
   const { closeModal } = useModalContext()
+  const { setAlert } = useSnackBarContext()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -43,48 +46,38 @@ const SignupForm = ({ role }) => {
       },
       onSubmit: async () => {
         try {
-          const { firstName, lastName, email, password } = data
-
           await authService.signup({
-            firstName,
-            lastName,
-            email,
-            password,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            password: data.password,
+            confirmPassword: data.confirmPassword,
             role
           })
-
           closeModal()
         } catch (e) {
-          console.error('Signup error:', e)
+          setAlert({
+            severity: snackbarVariants.error,
+            message: e.response?.data?.code
+              ? `errors.${e.response.data.code}`
+              : 'common.errorMessages.signupFailed'
+          })
         }
       },
       validations: { firstName, lastName, email, password, confirmPassword }
     }
   )
 
-  const getErrorMessage = (errorKey) => {
-    if (!errorKey) return ''
-    return errorKey.includes('empty') || errorKey.includes('required')
-      ? t('common.errorMessages.emptyField')
-      : t(errorKey)
-  }
-
   const isFormInvalid =
+    !data.agreement ||
     !data.firstName.trim() ||
     !data.lastName.trim() ||
     !data.email.trim() ||
     !data.password.trim() ||
     !data.confirmPassword.trim() ||
-    !data.agreement ||
     Object.values(errors).some(Boolean)
 
-  const helperTextProps = {
-    sx: {
-      whiteSpace: 'normal',
-      wordBreak: 'break-word',
-      lineHeight: '1.2'
-    }
-  }
+  const getErrorMessage = (errorKey) => (errorKey ? t(errorKey) : '')
 
   return (
     <Box
@@ -101,12 +94,10 @@ const SignupForm = ({ role }) => {
         sx={{
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
-          gap: '16px',
-          width: '100%'
+          gap: '16px'
         }}
       >
         <AppTextField
-          FormHelperTextProps={helperTextProps}
           error={Boolean(errors.firstName)}
           fullWidth
           helperText={getErrorMessage(errors.firstName)}
@@ -116,7 +107,6 @@ const SignupForm = ({ role }) => {
           value={data.firstName}
         />
         <AppTextField
-          FormHelperTextProps={helperTextProps}
           error={Boolean(errors.lastName)}
           fullWidth
           helperText={getErrorMessage(errors.lastName)}
@@ -128,7 +118,6 @@ const SignupForm = ({ role }) => {
       </Box>
 
       <AppTextField
-        FormHelperTextProps={helperTextProps}
         error={Boolean(errors.email)}
         fullWidth
         helperText={getErrorMessage(errors.email)}
@@ -139,18 +128,11 @@ const SignupForm = ({ role }) => {
       />
 
       <AppTextField
-        FormHelperTextProps={helperTextProps}
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>
               <IconButton onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? (
-                  <VisibilityOff
-                    color={errors.password ? 'error' : 'inherit'}
-                  />
-                ) : (
-                  <Visibility color={errors.password ? 'error' : 'inherit'} />
-                )}
+                {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
             </InputAdornment>
           )
@@ -166,22 +148,13 @@ const SignupForm = ({ role }) => {
       />
 
       <AppTextField
-        FormHelperTextProps={helperTextProps}
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>
               <IconButton
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? (
-                  <VisibilityOff
-                    color={errors.confirmPassword ? 'error' : 'inherit'}
-                  />
-                ) : (
-                  <Visibility
-                    color={errors.confirmPassword ? 'error' : 'inherit'}
-                  />
-                )}
+                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
             </InputAdornment>
           )

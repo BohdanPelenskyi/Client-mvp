@@ -1,28 +1,35 @@
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import { Box, Typography } from '@mui/material'
+
 import LoginDialog from '~/containers/guest-home-page/login-dialog/LoginDialog'
 import GoogleButton from '~/containers/guest-home-page/google-button/GoogleButton'
 import { useModalContext } from '~/context/modal-context'
 import { guestRoutes } from '~/router/constants/guestRoutes'
 import { UserRoleEnum } from '~/types'
+import { signup as signupType } from '~/constants'
 
 import { styles } from '~/containers/guest-home-page/google-login/GoogleLogin.styles'
 
-const GoogleLogin = ({ type, buttonWidth, role }) => {
+const GoogleLogin = ({ type, buttonWidth, role = UserRoleEnum.Student }) => {
   const { t } = useTranslation()
   const { whatCanYouDo } = guestRoutes.navBar
   const { openModal, closeModal } = useModalContext()
+
+  const isSignup = type === signupType
+  const baseKey = isSignup ? 'signup' : 'login'
 
   const openLoginDialog = () => {
     closeModal()
     setTimeout(() => openModal({ component: <LoginDialog /> }), 0)
   }
 
-  const haveAccountText =
+  const signupText =
     role === UserRoleEnum.Student
       ? t('signup.haveAccount.student')
       : t('signup.haveAccount.tutor')
+
+  const haveAccountText = isSignup ? signupText : t('login.haveAccount')
 
   return (
     <Box
@@ -35,7 +42,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
     >
       <Box sx={{ ...styles.linesBox, width: '100%', ml: 0, mt: '16px' }}>
         <Typography sx={styles.continue} variant='body2'>
-          {t('signup.continue')}
+          {t(`${baseKey}.continue`)}
         </Typography>
       </Box>
 
@@ -76,7 +83,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
           }}
           variant='body2'
         >
-          {t('signup.joinUs')}
+          {t(`${baseKey}.joinUs`)}
         </Typography>
       </Box>
     </Box>
@@ -86,7 +93,7 @@ const GoogleLogin = ({ type, buttonWidth, role }) => {
 GoogleLogin.propTypes = {
   type: PropTypes.string.isRequired,
   buttonWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  role: PropTypes.string
+  role: PropTypes.oneOf(Object.values(UserRoleEnum))
 }
 
 export default GoogleLogin

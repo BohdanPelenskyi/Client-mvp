@@ -5,32 +5,26 @@ export const email = (value) => {
 }
 
 export const password = (value) => {
+  return helperTextHandler(value, 'password')
+}
+
+export const signupPassword = (value) => {
   const basicError = helperTextHandler(value, 'password')
-  if (basicError) {
-    return basicError
-  }
+  if (basicError) return basicError
 
   const hasLetter = /[A-Za-z]/.test(value)
   const hasNumber = /\d/.test(value)
 
-  if (hasLetter && hasNumber) {
-    return ''
-  }
-
-  return 'common.errorMessages.passwordValid'
+  return hasLetter && hasNumber ? '' : 'common.errorMessages.passwordValid'
 }
 
 const validateName = (value) => {
   const error = nameField(value)
-  if (error) {
-    return error
-  }
+  if (error) return error
 
-  if (value && value.length >= 2 && value.length <= 15) {
-    return ''
-  }
-
-  return 'common.errorMessages.nameLength'
+  return value && value.length >= 2 && value.length <= 15
+    ? ''
+    : 'common.errorMessages.nameLength'
 }
 
 export const firstName = (value) => validateName(value)
