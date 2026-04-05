@@ -19,6 +19,7 @@ import { authService } from '~/services/auth-service'
 import { useModalContext } from '~/context/modal-context'
 import { useSnackBarContext } from '~/context/snackbar-context'
 import { snackbarVariants } from '~/constants'
+import EmailConfirmModal from '~/containers/email-confirm-modal/EmailConfirmModal'
 import {
   firstName,
   lastName,
@@ -28,8 +29,8 @@ import {
 } from '~/utils/validations/login'
 
 const SignupForm = ({ role }) => {
-  const { t } = useTranslation()
-  const { closeModal } = useModalContext()
+  const { t } = useTranslation('translations')
+  const { openModal } = useModalContext()
   const { setAlert } = useSnackBarContext()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -51,16 +52,20 @@ const SignupForm = ({ role }) => {
             lastName: data.lastName,
             email: data.email,
             password: data.password,
-            confirmPassword: data.confirmPassword,
             role
           })
-          closeModal()
+
+          openModal({
+            component: (
+              <EmailConfirmModal confirmToken='verification-pending' />
+            ),
+            closeOnBackdropClick: false
+          })
         } catch (e) {
+          const errorCode = e.response?.data?.code || 'signupFailed'
           setAlert({
             severity: snackbarVariants.error,
-            message: e.response?.data?.code
-              ? `errors.${e.response.data.code}`
-              : 'common.errorMessages.signupFailed'
+            message: t(`errors.${errorCode}`)
           })
         }
       },
@@ -77,11 +82,10 @@ const SignupForm = ({ role }) => {
     !data.confirmPassword.trim() ||
     Object.values(errors).some(Boolean)
 
-  const getErrorMessage = (errorKey) => (errorKey ? t(errorKey) : '')
-
   return (
     <Box
       component='form'
+      noValidate
       onSubmit={handleSubmit}
       sx={{
         display: 'flex',
@@ -100,7 +104,7 @@ const SignupForm = ({ role }) => {
         <AppTextField
           error={Boolean(errors.firstName)}
           fullWidth
-          helperText={getErrorMessage(errors.firstName)}
+          helperText={errors.firstName ? t(errors.firstName) : ''}
           label={t('common.labels.firstName')}
           onBlur={handleBlur('firstName')}
           onChange={handleInputChange('firstName')}
@@ -109,7 +113,7 @@ const SignupForm = ({ role }) => {
         <AppTextField
           error={Boolean(errors.lastName)}
           fullWidth
-          helperText={getErrorMessage(errors.lastName)}
+          helperText={errors.lastName ? t(errors.lastName) : ''}
           label={t('common.labels.lastName')}
           onBlur={handleBlur('lastName')}
           onChange={handleInputChange('lastName')}
@@ -120,7 +124,7 @@ const SignupForm = ({ role }) => {
       <AppTextField
         error={Boolean(errors.email)}
         fullWidth
-        helperText={getErrorMessage(errors.email)}
+        helperText={errors.email ? t(errors.email) : ''}
         label={t('common.labels.email')}
         onBlur={handleBlur('email')}
         onChange={handleInputChange('email')}
@@ -139,7 +143,7 @@ const SignupForm = ({ role }) => {
         }}
         error={Boolean(errors.password)}
         fullWidth
-        helperText={getErrorMessage(errors.password)}
+        helperText={errors.password ? t(errors.password) : ''}
         label={t('common.labels.password')}
         onBlur={handleBlur('password')}
         onChange={handleInputChange('password')}
@@ -161,7 +165,7 @@ const SignupForm = ({ role }) => {
         }}
         error={Boolean(errors.confirmPassword)}
         fullWidth
-        helperText={getErrorMessage(errors.confirmPassword)}
+        helperText={errors.confirmPassword ? t(errors.confirmPassword) : ''}
         label={t('common.labels.confirmPassword')}
         onBlur={handleBlur('confirmPassword')}
         onChange={handleInputChange('confirmPassword')}
@@ -173,7 +177,7 @@ const SignupForm = ({ role }) => {
         control={
           <Checkbox
             checked={data.agreement}
-            onChange={(e) => handleInputChange('agreement')(e)}
+            onChange={handleInputChange('agreement')}
           />
         }
         label={
