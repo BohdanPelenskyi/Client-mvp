@@ -20,14 +20,32 @@ const GoogleButton = ({ role, route, buttonWidth, type }) => {
   const handleCredentialResponse = useCallback(
     async (token) => {
       try {
-        await googleAuth({ token, role }).unwrap()
+        // Викликаємо функцію без .unwrap(), щоб уникнути помилки TypeError
+        const response = await googleAuth({ token, role })
+
+        // Перевіряємо, чи повернув RTK Query помилку всередині об'єкта
+        if (response?.error) {
+          throw response.error
+        }
+
+        // Якщо все успішно (статус 200 OK) — закриваємо модалку
         closeModal()
+        // ОНОВЛЮЄМО СТОРІНКУ, щоб React побачив нові куки і закинув у профіль
+        window.location.reload()
       } catch (e) {
+        // Логуємо реальну помилку в консоль для дебагінгу
+        console.error('Google Auth Error Details:', e)
+
+        // Безпечно дістаємо код помилки або показуємо невідому помилку
         setAlert({
           severity: snackbarVariants.error,
-          message: `errors.${e.data.code}`
+          message: e?.data?.code
+            ? `errors.${e.data.code}`
+            : 'errors.UNKNOWN_ERROR'
         })
-        if (e.data.code === 'USER_NOT_FOUND') {
+
+        // Якщо юзера не знайдено, перенаправляємо на відповідний блок
+        if (e?.data?.code === 'USER_NOT_FOUND') {
           closeModal()
           scrollToHash(ref)
         }

@@ -22,14 +22,14 @@ const LoginDialog = () => {
   // Функція для обробки успішного входу (спільна для форми та Google)
   const handleSuccessLogin = () => {
     closeModal()
-    // Перезавантаження обов'язкове, щоб Redux побачив accessToken у куках
-    globalThis.location.reload()
+    // Перезавантаження обов'язкове, щоб React побачив accessToken у куках
+    window.location.reload()
   }
 
   // Функція для обробки помилок (спільна)
   const handleLoginError = (e) => {
     console.error('Login Error:', e)
-    // Безпечне отримання коду помилки, щоб уникнути TypeError: cannot read properties of undefined
+    // Безпечне отримання коду помилки, щоб уникнути TypeError
     const errorCode = e?.response?.data?.code || e?.data?.code || 'loginFailed'
 
     setAlert({
@@ -72,7 +72,7 @@ const LoginDialog = () => {
             handleSubmit={handleSubmit}
           />
 
-          {/* Компонент GoogleLogin автоматично використовує мутацію з auth-service.ts */}
+          {/* Компонент GoogleLogin автоматично використовує мутацію з auth-service */}
           <GoogleLogin buttonWidth={styles.form.maxWidth} type={login} />
         </Box>
       </Box>
