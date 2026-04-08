@@ -47,6 +47,16 @@ const SignupForm = ({ role }) => {
       },
       onSubmit: async () => {
         try {
+          // 1. Показуємо плашку про початок процесу
+          setAlert({
+            severity: snackbarVariants.info,
+            message: t(
+              'signup.sendingEmail',
+              'Надсилаємо дані для реєстрації...'
+            )
+          })
+
+          // Викликаємо сервіс реєстрації
           await authService.signup({
             firstName: data.firstName,
             lastName: data.lastName,
@@ -55,9 +65,19 @@ const SignupForm = ({ role }) => {
             role
           })
 
+          // 2. Показуємо плашку про успішну реєстрацію
+          setAlert({
+            severity: snackbarVariants.success,
+            message: t('signup.successSignup', 'Реєстрація пройшла успішно!')
+          })
+
+          // 3. Відкриваємо модалку, ПЕРЕДАЮЧИ email прямо в пропси
           openModal({
             component: (
-              <EmailConfirmModal confirmToken='verification-pending' />
+              <EmailConfirmModal
+                confirmToken='verification-pending'
+                email={data.email}
+              />
             ),
             closeOnBackdropClick: false
           })
@@ -204,4 +224,5 @@ const SignupForm = ({ role }) => {
 }
 
 SignupForm.propTypes = { role: PropTypes.string.isRequired }
+
 export default SignupForm

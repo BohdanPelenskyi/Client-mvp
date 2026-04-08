@@ -22,6 +22,16 @@ export const authService = {
         withCredentials: true
       }
     )
+  },
+
+  // ЦЕЙ МЕТОД МИ ДОДАЛИ, ЩОБ ПІДТВЕРДЖЕННЯ ЗАПРАЦЮВАЛО
+  confirmEmail: (confirmToken: string): Promise<AxiosResponse> => {
+    return axios.get(
+      `http://localhost:8080/auth/confirm-email/${confirmToken}`,
+      {
+        withCredentials: true
+      }
+    )
   }
 }
 
