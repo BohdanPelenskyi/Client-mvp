@@ -29,7 +29,7 @@ import {
 } from '~/utils/validations/login'
 
 const SignupForm = ({ role }) => {
-  const { t } = useTranslation('translations')
+  const { t } = useTranslation(['translations', 'signup'])
   const { openModal } = useModalContext()
   const { setAlert } = useSnackBarContext()
   const [showPassword, setShowPassword] = useState(false)
@@ -47,16 +47,12 @@ const SignupForm = ({ role }) => {
       },
       onSubmit: async () => {
         try {
-          // 1. Показуємо плашку про початок процесу
+          // Показуємо плашку про початок (використовуємо ключ з signup або загальний)
           setAlert({
             severity: snackbarVariants.info,
-            message: t(
-              'signup.sendingEmail',
-              'Надсилаємо дані для реєстрації...'
-            )
+            message: t('signup.confirmEmailMessage') // Або додайте "sendingEmail" у JSON
           })
 
-          // Викликаємо сервіс реєстрації
           await authService.signup({
             firstName: data.firstName,
             lastName: data.lastName,
@@ -65,13 +61,12 @@ const SignupForm = ({ role }) => {
             role
           })
 
-          // 2. Показуємо плашку про успішну реєстрацію
+          // Показуємо повідомлення про успіх, використовуючи існуючий ключ із вашого файлу
           setAlert({
             severity: snackbarVariants.success,
-            message: t('signup.successSignup', 'Реєстрація пройшла успішно!')
+            message: t('signup.confirmEmailTitle')
           })
 
-          // 3. Відкриваємо модалку, ПЕРЕДАЮЧИ email прямо в пропси
           openModal({
             component: (
               <EmailConfirmModal
