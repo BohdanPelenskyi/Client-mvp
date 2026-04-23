@@ -1,67 +1,86 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 
-export const authService = {
-  signup: (userData: Record<string, unknown>): Promise<AxiosResponse> => {
-    return axios.post('http://localhost:8080/auth/signup', userData, {
-      withCredentials: true
-    })
+import { appApi } from '~/redux/apiSlice'
+import { logout, setUser } from '~/redux/reducer'
+import { axiosClient } from '~/plugins/axiosClient'
+
+import { createUrlPath } from '~/utils/helper-functions'
+import { URLs } from '~/constants/request'
+import {
+  ApiMethodEnum,
+  GoogleAuthParams,
+  LoginParams,
+  LoginResponse,
+  SignupParams,
+  SignupResponse
+} from '~/types'
+
+const { POST } = ApiMethodEnum
+
+export const AuthService = {
+  refresh: (): Promise<AxiosResponse<LoginResponse>> => {
+    return axiosClient.get(URLs.auth.refresh)
   },
-
-  login: (loginData: Record<string, unknown>): Promise<AxiosResponse> => {
-    return axios.post('http://localhost:8080/auth/login', loginData, {
-      withCredentials: true
-    })
-  },
-
-  googleAuth: (token: string, role: string): Promise<AxiosResponse> => {
-    return axios.post(
-      'http://localhost:8080/auth/google-login',
-      { token, role },
-      {
-        withCredentials: true
-      }
-    )
-  },
-
-  // ЦЕЙ МЕТОД МИ ДОДАЛИ, ЩОБ ПІДТВЕРДЖЕННЯ ЗАПРАЦЮВАЛО
   confirmEmail: (confirmToken: string): Promise<AxiosResponse> => {
-    return axios.get(
-      `http://localhost:8080/auth/confirm-email/${confirmToken}`,
-      {
-        withCredentials: true
+    const confirmUrl = createUrlPath(URLs.auth.confirm, confirmToken)
+    return axiosClient.get(confirmUrl)
+  },
+  forgotPassword: (userEmail: string): Promise<AxiosResponse> => {
+    return axiosClient.post(URLs.auth.forgotPassword, userEmail)
+  },
+  resetPassword: (
+    resetToken: string,
+    newPassword: string
+  ): Promise<AxiosResponse> => {
+    const confirmUrl = createUrlPath(URLs.auth.resetPassword, resetToken)
+    return axiosClient.patch(confirmUrl, newPassword)
+  }
+}
+
+export const authApi = appApi.injectEndpoints({
+  endpoints: (build) => ({
+    signUp: build.mutation<SignupResponse, SignupParams>({
+      query: (body) => ({ url: URLs.auth.signup, method: POST, body })
+    }),
+    login: build.mutation<LoginResponse, LoginParams>({
+      query: (body) => ({ url: URLs.auth.login, method: POST, body }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          dispatch(setUser(data.accessToken))
+        } catch {
+          dispatch(logout())
+        }
       }
-    )
-  }
-}
+    }),
+    googleAuth: build.mutation<LoginResponse, GoogleAuthParams>({
+      query: (body) => ({ url: URLs.auth.googleAuth, method: POST, body }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          dispatch(setUser(data.accessToken))
+        } catch {
+          dispatch(logout())
+        }
+      }
+    }),
+    logout: build.mutation<void, void>({
+      query: () => ({ url: URLs.auth.logout, method: POST }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled
+        dispatch(logout())
+      }
+    })
+  }),
+  overrideExisting: false
+})
 
-export const AuthService = authService
+export const {
+  useSignUpMutation,
+  useLoginMutation,
+  useGoogleAuthMutation,
+  useLogoutMutation
+} = authApi
 
-export const useGoogleAuthMutation = () => {
-  const mutation = async (args: { token: string; role: string }) => {
-    const response: AxiosResponse<{ data: unknown }> =
-      await authService.googleAuth(args.token, args.role)
-    return { data: response.data }
-  }
-  return [mutation, { isLoading: false }] as const
-}
-
-export const useLoginMutation = () => {
-  const mutation = async (data: Record<string, unknown>) => {
-    const response: AxiosResponse<{ data: unknown }> =
-      await authService.login(data)
-    return { data: response.data }
-  }
-  return [mutation, { isLoading: false }] as const
-}
-
-export const useLogoutMutation = () => {
-  const mutation = async () => {
-    return axios.post(
-      'http://localhost:8080/auth/logout',
-      {},
-      { withCredentials: true }
-    )
-  }
-  return [mutation, { isLoading: false }] as const
-}
+export const authService = authApi
